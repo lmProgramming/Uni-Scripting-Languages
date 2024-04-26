@@ -1,40 +1,4 @@
-from typing import List, Tuple, Dict, Any
-
-'''
-Nie wykorzystując imperatywnych instrukcji for, while, if , opracuj implementację każdej1
-z poniższych funkcji:
-a. Funkcja, która przyjmuje na wejściu listę ciągów znaków akronim zbudowany z
-tych ciągów znaków. Przykład:
->>> acronym([“Zakład”, “Ubezpieczeń”, “Społecznych”])
-ZUS
-b. Funkcja, która przyjmuje na wejściu przyjmuje listę liczb i zwraca ich medianę.
-Funkcja nie może korzystać z modułu statistics ani żadnego innego modułu do
-obliczeń statystycznych. Przykład:
->>> median([1,1,19,2,3,4,4,5,1])
-3
-c. Funkcja obliczająca pierwiastek kwadratowy metodą Netwona. Funkcja
-przyjmuje na wejściu pierwiastkowaną liczbę oraz epsilon i zwraca taki , żexy
-i .y ≥ 0  |y2-x|<epsilon
-Przykład:
-1 Oileniezostanąużytewramachtzw.list/dictcomprehensionsluboperatoraternarnego.
-1
->>> pierwiastek(3, epsilon = 0.1)
-1.75
-d. Funkcja, która przyjmuje na wejściu ciąg znaków, a zwraca na wyjściu słownik, w
-którym kluczami są znaki występujące alfabetyczne występujące ciągu, a
-wartościami listy słów zawierających te znaki. Przykład:
->>> make_alpha_dict(“on i ona”)
-{'o': ['on', 'ona'], 'n': ['on', 'ona'], 'i': ['i'], 'a': ['ona']}
-e. Funkcja spłaszczająca listy. Funkcja powinna przyjmować listę, której
-elementami mogą być elementy skalarne lub sekwencje. Spłaszczenie polega na
-zmianie zagnieżdżonej struktury na jednowymiarową listę zawierającą wszystkie
-elementy wewnętrznych sekwencji. Spłaszczenie powinno działać na wszystkich
-poziomach zagnieżdżeń, tzn. wynikowa lista powinna zawierać tylko elementy
-skalarne. Na potrzeby zadania należy przyjąć, że elementy skalarne to takie, które
-nie są listami ani krotkami. Przykład:
->>> flatten([1, [2, 3], [[4, 5], 6]])
-[1, 2, 3, 4, 5, 6]
-'''
+from typing import List, Dict, Any
 
 acronym = lambda x: ''.join([i[0] for i in x])
 
@@ -66,26 +30,6 @@ def median_functionally(numbers: List[int]) -> int:
     if n % 2 == 0:
         return (numbers_sorted[n // 2] + numbers_sorted[n // 2 - 1]) / 2
     return numbers_sorted[n // 2] 
-
-print(acronym(["Zakład", "Ubezpieczeń", "Społecznych"]))
-
-print(acronym_fun(["Zakład", "Ubezpieczeń", "Społecznych"]))
-
-print(functional_sort([1,1,19,2,3,4,4,5,1]))
-
-print(median_functionally([1,1,19,2,3,4,4,5,1]))
-
-print(median([1,1,19,2,3,4,4,5,1])) 
-
-'''
-c. Funkcja obliczająca pierwiastek kwadratowy metodą Netwona. Funkcja
-przyjmuje na wejściu pierwiastkowaną liczbę oraz epsilon i zwraca taki , żexy
-i .y ≥ 0  |y2-x|<epsilon
-Przykład:
-1 Oileniezostanąużytewramachtzw.list/dictcomprehensionsluboperatoraternarnego.
-1
->>> pierwiastek(3, epsilon = 0.1)
-'''
 
 def newton_sqrt(x: float, epsilon: float) -> float:
     def improve(guess: float) -> float:
@@ -128,20 +72,6 @@ def make_alpha_dict(string: str) -> Dict[str, List[str]]:
     words = string.split()
     return aux(words, {})
 
-print(make_alpha_dict("on i ona"))
-
-'''
-Funkcja spłaszczająca listy. Funkcja powinna przyjmować listę, której
-elementami mogą być elementy skalarne lub sekwencje. Spłaszczenie polega na
-zmianie zagnieżdżonej struktury na jednowymiarową listę zawierającą wszystkie
-elementy wewnętrznych sekwencji. Spłaszczenie powinno działać na wszystkich
-poziomach zagnieżdżeń, tzn. wynikowa lista powinna zawierać tylko elementy
-skalarne. Na potrzeby zadania należy przyjąć, że elementy skalarne to takie, które
-nie są listami ani krotkami. Przykład:
->>> flatten([1, [2, 3], [[4, 5], 6]])
-[1, 2, 3, 4, 5, 6]
-'''
-
 def flatten(elements: List[Any]) -> List[Any]:
     def aux(elements: List[Any], result: List[Any]):
         if len(elements) == 0:
@@ -153,5 +83,17 @@ def flatten(elements: List[Any]) -> List[Any]:
             return aux(tail, result + [head])
         
     return aux(elements, [])
+
+print(acronym(["Zakład", "Ubezpieczeń", "Społecznych"]))
+
+print(acronym_fun(["Zakład", "Ubezpieczeń", "Społecznych"]))
+
+print(functional_sort([1,1,19,2,3,4,4,5,1]))
+
+print(median_functionally([1,1,19,2,3,4,4,5,1]))
+
+print(median([1,1,19,2,3,4,4,5,1])) 
+
+print(make_alpha_dict("on i ona"))
 
 print(flatten([1, [2, 3], [[4, 5], 6]]))
