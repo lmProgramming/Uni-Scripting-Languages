@@ -59,9 +59,21 @@ def hey():
 def print_num(num: int):
     print(num)
     return ((num / 2) ** (132/321)) ** 124
+
+@log(logging.INFO)
+class Human:
+    def __init__(self, name: str, age: int):
+        self.name = name
+        self.age = age
+
+    def __str__(self):
+        return f"{self.name}, {self.age}"
         
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     
     hey()
     print_num(12)
+    
+    human = Human("John", 23)
+    
