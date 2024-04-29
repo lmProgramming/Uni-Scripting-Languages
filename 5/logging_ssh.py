@@ -44,7 +44,7 @@ def setup_logging(log_level):
     error_logger.addHandler(logging.StreamHandler())
 
 if __name__ == "__main__":
-    logs: List[ShhLog] = read_details("SSH.log")
+    logs: List[ShhLog] = read_details("OpenSSH_2k.log")
     
     setup_logging(log_level="INFO")
     
