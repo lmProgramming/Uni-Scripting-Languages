@@ -4,6 +4,7 @@ from message import Message
 from typing import List
 from enum import Enum, auto
 from abc import ABC, abstractmethod
+from ipaddress import IPv4Address
 
 class IPV4:
     ipv4: List[int]
@@ -44,7 +45,7 @@ class SSHLogEntry(ABC):
     event: int
     details: str
     user: str | None = None
-    ipv4: IPV4 | None = None
+    ipv4: IPv4Address | None = None
     _unparsed_log: str
     
     @abstractmethod
@@ -65,8 +66,6 @@ class SSHLogEntry(ABC):
         return self.ipv4 is not None
     
     def base_parse_log(self, log_unparsed: str):
-        #Dec 10 06:55:46 LabSZ sshd[24200]: reverse mapping checking getaddrinfo for ns.marryaldkfaczcz.com [173.234.31.186] failed - POSSIBLE BREAK-IN ATTEMPT!
-
         pattern = r'(?P<datetime>\S{3}\s+\d{1,2}\s+\d\d:\d\d:\d\d)\s+(?P<servername>\S+)\s+sshd\[(?P<event>\d+)\]:\s+(?P<details>.*)'
 
         matches = re.fullmatch(pattern, log_unparsed.strip())

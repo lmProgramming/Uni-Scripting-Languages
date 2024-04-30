@@ -1,8 +1,5 @@
 from dataclasses import dataclass
 import datetime
-import re
-from enum import Enum, auto
-from typing import Optional
 from ssh_log import *
 from ssh_log_journal import SSHLogJournal
 from ssh_user import SSHUser
@@ -11,7 +8,7 @@ from random import shuffle
 def main():
     journal: SSHLogJournal = SSHLogJournal()
     
-    with open("OpenSSH_2k.log", "r") as f:
+    with open("6/OpenSSH_2k.log", "r") as f:
         for line in f:
             journal.append(line)
             
