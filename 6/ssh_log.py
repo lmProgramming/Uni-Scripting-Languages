@@ -55,7 +55,7 @@ class SSHLogEntry(ABC):
     def __init__(self, unparsed_log: str):
         self._unparsed_log = unparsed_log
         
-        self.base_parse_log(unparsed_log)
+        self.base_parse_log()
         
         self.ipv4 = SSHLogEntry.get_ipv4s_from_log(self.details)
         self.user = SSHLogEntry.get_user_from_log(self.details)
@@ -65,10 +65,10 @@ class SSHLogEntry(ABC):
     def has_ip(self):
         return self.ipv4 is not None
     
-    def base_parse_log(self, log_unparsed: str):
+    def base_parse_log(self):
         pattern = r'(?P<datetime>\S{3}\s+\d{1,2}\s+\d\d:\d\d:\d\d)\s+(?P<servername>\S+)\s+sshd\[(?P<event>\d+)\]:\s+(?P<details>.*)'
 
-        matches = re.fullmatch(pattern, log_unparsed.strip())
+        matches = re.fullmatch(pattern, self._unparsed_log.strip())
         
         self.timestamp = datetime.datetime.strptime(matches["datetime"], "%b %d %H:%M:%S").replace(year=2024)
         self.server_name = matches["servername"]
@@ -80,7 +80,7 @@ class SSHLogEntry(ABC):
         pattern = r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}'
         matched = re.search(pattern, details)
         if matched:
-            return IPV4(matched[0])
+            return IPv4Address(matched[0])
         return None
 
     @staticmethod
@@ -109,7 +109,7 @@ class SSHLogEntry(ABC):
         
     @staticmethod
     def get_message(details: str):
-        message_types = {
+        message_types: dict[str, Message] = {
             'POSSIBLE BREAK-IN ATTEMPT!': Message.Other,            
             'accepted password': Message.Success,
             'authentication failure': Message.Error,
@@ -131,7 +131,7 @@ class SSHLogEntry(ABC):
         return f'{self.timestamp} {self.server_name} {self.event} {self.user} {self.ipv4} {self.message}'
     
     def __repr__(self):
-        return f'SHHLogEntry({self._unparsed_log})'
+        return f'{__class__.__name__}({self._unparsed_log})'
 
     def __eq__(self, other):
         if isinstance(other, SSHLogEntry):

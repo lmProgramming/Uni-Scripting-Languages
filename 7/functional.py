@@ -5,31 +5,24 @@ acronym = lambda x: ''.join([i[0] for i in x])
 def acronym_fun(words: List[str], result=""):
     return result if not words else acronym_fun(words[1:], result + words[0][0]) 
 
-def median(numbers: List[int]) -> int:
+def median(numbers: List[int]) -> int|float:
     numbers.sort()
     
     n = len(numbers)
     
-    if n % 2 == 0:
-        return (numbers[n // 2] + numbers[n // 2 - 1]) / 2
-    return numbers[n // 2]
+    return (numbers[n // 2] + numbers[n // 2 - 1]) / 2 if n % 2 == 0 else numbers[n // 2]
 
-def functional_sort(numbers: List[int]) -> List[int]:
-    if len(numbers) == 1:
-        return numbers
-    if len(numbers) == 0:
-        return []
-    head, tail = numbers[0], numbers[1:]
-    return numbers if not numbers else functional_sort([x for x in tail if x < head]) + [head] + functional_sort([x for x in tail if x >= head])
+def functional_sort(numbers: List[int]) -> List[int]:    
+    return [] if len(numbers) == 0 \
+    else numbers if not numbers \
+    else functional_sort([x for x in numbers[1:] if x < numbers[0]]) + [numbers[0]] + functional_sort([x for x in numbers[1:] if x >= numbers[0]])
 
-def median_functionally(numbers: List[int]) -> int:
+def median_functionally(numbers: List[int]) -> int|float:
     numbers_sorted = functional_sort(numbers)
     
     n = len(numbers_sorted)
     
-    if n % 2 == 0:
-        return (numbers_sorted[n // 2] + numbers_sorted[n // 2 - 1]) / 2
-    return numbers_sorted[n // 2] 
+    return (numbers_sorted[n // 2] + numbers_sorted[n // 2 - 1]) / 2 if n % 2 == 0 else numbers_sorted[n // 2] 
 
 def newton_sqrt(x: float, epsilon: float) -> float:
     def improve(guess: float) -> float:
@@ -39,10 +32,7 @@ def newton_sqrt(x: float, epsilon: float) -> float:
         return abs(guess ** 2 - x) < epsilon
 
     def sqrt_iter(guess: float) -> float:
-        if good_enough(guess):
-            return guess
-        else:
-            return sqrt_iter(improve(guess))
+        return guess if good_enough(guess) else sqrt_iter(improve(guess))
 
     return sqrt_iter(1.0)
 
@@ -51,7 +41,9 @@ print(newton_sqrt(3, epsilon=0.1))
 def analyze_word(word: str, chars: List[str], dictionary: Dict[str, List[str]]):
     if len(chars) == 0:
         return dictionary
+    
     char, tail = chars[0], chars[1:]
+    
     if char.isalpha():
         if char in dictionary:
             dictionary[char].append(word)
@@ -77,10 +69,7 @@ def flatten(elements: List[Any]) -> List[Any]:
         if len(elements) == 0:
             return result
         head, tail = elements[0], elements[1:]
-        if isinstance(head, list):
-            return aux(head + tail, result)
-        else:
-            return aux(tail, result + [head])
+        return aux(head + tail, result) if isinstance(head, list) else aux(tail, result + [head])
         
     return aux(elements, [])
 
