@@ -2,18 +2,6 @@ import logging
 import time
 from time import sleep
 
-'''
-Skonstruuj dekorator log, który będzie służył do dekorowania funkcji lub klas. Dekoracja
-ma polegać na logowaniu danych o wywołaniu funkcji z wykorzystaniem modułu
-logging.
-a. Udekorowana funkcja powinna logować informację o czasie wywołania, czasie
-trwania, nazwie funkcji oraz jej argumentach i wartości zwracanej. Dekorator
-powinien przyjmować poziom logowania jako argument (np. DEBUG, INFO itp.).
-b. W przypadku udekorowania klasy, logowany powinien być fakt jej
-zainstancjonowania, tzn. utworzenia obiektu.
-3
-'''
-
 import logging
 import time
 from functools import wraps

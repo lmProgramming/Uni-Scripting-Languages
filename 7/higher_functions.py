@@ -28,18 +28,19 @@ def atmost(n, pred, iterable):
                 return True
     return False
 
-print("forall")
-print(forall(lambda x: x > 0, [1, 2, 3, 4, 5]))
-print(forall(lambda x: x > 0, [1, 2, 3, -4, 5]))
+if __name__ == "__main__":
+    print("forall")
+    print(forall(lambda x: x > 0, [1, 2, 3, 4, 5]))
+    print(forall(lambda x: x > 0, [1, 2, 3, -4, 5]))
 
-print("exists")
-print(exists(lambda x: x < 0, [1, 2, 3, 4, 5]))
-print(exists(lambda x: x < 0, [1, 2, 3, -4, 5]))
+    print("exists")
+    print(exists(lambda x: x < 0, [1, 2, 3, 4, 5]))
+    print(exists(lambda x: x < 0, [1, 2, 3, -4, 5]))
 
-print("atleast")
-print(atleast(5, lambda x: x > 0, [1, 2, 3, 4, 5]))
-print(atleast(5, lambda x: x > 0, [1, 2, 3, -4, 5]))
+    print("atleast")
+    print(atleast(5, lambda x: x > 0, [1, 2, 3, 4, 5]))
+    print(atleast(5, lambda x: x > 0, [1, 2, 3, -4, 5]))
 
-print("atmost")
-print(atmost(4, lambda x: x > 0, [1, 2, 3, 4, 5]))
-print(atmost(4, lambda x: x > 0, [1, 2, 3, -4, 5]))
+    print("atmost")
+    print(atmost(4, lambda x: x > 0, [1, 2, 3, 4, 5]))
+    print(atmost(4, lambda x: x > 0, [1, 2, 3, -4, 5]))

@@ -73,16 +73,17 @@ def flatten(elements: List[Any]) -> List[Any]:
         
     return aux(elements, [])
 
-print(acronym(["Zakład", "Ubezpieczeń", "Społecznych"]))
+if __name__ == "__main__":
+    print(acronym(["Zakład", "Ubezpieczeń", "Społecznych"]))
 
-print(acronym_fun(["Zakład", "Ubezpieczeń", "Społecznych"]))
+    print(acronym_fun(["Zakład", "Ubezpieczeń", "Społecznych"]))
 
-print(functional_sort([1,1,19,2,3,4,4,5,1]))
+    print(functional_sort([1,1,19,2,3,4,4,5,1]))
 
-print(median_functionally([1,1,19,2,3,4,4,5,1]))
+    print(median_functionally([1,1,19,2,3,4,4,5,1]))
 
-print(median([1,1,19,2,3,4,4,5,1])) 
+    print(median([1,1,19,2,3,4,4,5,1])) 
 
-print(make_alpha_dict("on i ona"))
+    print(make_alpha_dict("on i ona"))
 
-print(flatten([1, [2, 3], [[4, 5], 6]]))
+    print(flatten([1, [2, 3], [[4, 5], 6]]))
