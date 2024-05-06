@@ -35,8 +35,6 @@ def newton_sqrt(x: float, epsilon: float) -> float:
         return guess if good_enough(guess) else sqrt_iter(improve(guess))
 
     return sqrt_iter(1.0)
-
-print(newton_sqrt(3, epsilon=0.1))
         
 def analyze_word(word: str, chars: List[str], dictionary: Dict[str, List[str]]):
     if len(chars) == 0:
@@ -74,16 +72,26 @@ def flatten(elements: List[Any]) -> List[Any]:
     return aux(elements, [])
 
 if __name__ == "__main__":
+    print("Acronym")
     print(acronym(["Zakład", "Ubezpieczeń", "Społecznych"]))
-
+    
+    print("Acronym fun")
     print(acronym_fun(["Zakład", "Ubezpieczeń", "Społecznych"]))
-
+    
+    print("Functional sort")
     print(functional_sort([1,1,19,2,3,4,4,5,1]))
-
+    
+    print("Median")
     print(median_functionally([1,1,19,2,3,4,4,5,1]))
-
+    
+    print("Newton sqrt")
+    print(newton_sqrt(3, epsilon=0.1))
+    
+    print("Median")
     print(median([1,1,19,2,3,4,4,5,1])) 
-
+    
+    print("Make alpha dict")
     print(make_alpha_dict("on i ona"))
-
+    
+    print("Flatten")
     print(flatten([1, [2, 3], [[4, 5], 6]]))
