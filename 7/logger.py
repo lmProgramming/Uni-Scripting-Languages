@@ -16,8 +16,8 @@ def log(level):
             duration = end_time - start_time
             if callable(func):
                 logging.log(level, f"Called function {func.__name__} with arguments {args, kwargs}. "
-                                  f"Execution time: {duration} seconds. "
-                                  f"Return value: {result}.")
+                                   f"Execution time: {duration} seconds. "
+                                   f"Return value: {result}.")
             return result
         return wrapper
 
@@ -25,8 +25,12 @@ def log(level):
         orig_init = cls.__init__
         @wraps(cls.__init__)
         def new_init(self, *args, **kwargs):
-            logging.log(level, f"Instantiated class {cls.__name__} with arguments {args, kwargs}.")
-            orig_init(self, *args, **kwargs)
+            start_time = time.time()
+            orig_init(self, *args, **kwargs)            
+            end_time = time.time()
+            duration = end_time - start_time
+            
+            logging.log(level, f"Instantiated class {cls.__name__} with arguments {args, kwargs}." f"Execution time: {duration} seconds. ")
         cls.__init__ = new_init
         return cls
 
