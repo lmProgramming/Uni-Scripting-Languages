@@ -26,9 +26,6 @@ class SSHLogJournal:
 
     def get_logs_by_criteria(self, criteria):
         return [log for log in self.logs if criteria(log)]
-
-    def get_logs_by_octet(self, ip, octet_index):
-        return self.get_logs_by_criteria(lambda log: log.ip is not None and log.ip.get_octet(octet_index) == ip)
     
     def __repr__(self) -> str:
         return f"Contains {len(self.logs)} logs"

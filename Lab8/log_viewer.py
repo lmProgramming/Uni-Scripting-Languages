@@ -1,5 +1,5 @@
 from pyqt_search_bar import SearchBar
-from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QTextEdit, QPushButton, QLabel, QDateTimeEdit, QCheckBox
+from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QTextEdit, QPushButton, QLabel, QDateTimeEdit, QCheckBox, QFrame
 from PyQt5.QtCore import QDateTime
 from ssh_log import SSHLogEntry
 from log_reader import gather_logs_from
@@ -11,6 +11,8 @@ ERROR_WIDTH = 300
 ERROR_HEIGHT = 200
 
 LOG_CHAR_LIMIT = 60
+
+SHOW_SPECIFIC_DETAILS = False
 
 class ErrorPopup(QWidget):
     def __init__(self, message, dimensions):
@@ -42,7 +44,9 @@ class LogViewer(QMainWindow):
         self.app = app
         self.logs = []
         self.displayed_logs = []
-        self.current_log_index = 0
+        self.current_log_index = 0       
+        
+        self.special_details = {}
         
         self.setWindowTitle("Log Browser")
         
@@ -119,7 +123,22 @@ class LogViewer(QMainWindow):
         layout, self.message_text = self.create_text_with_label("Message")
         detailsLayout.addLayout(layout)
         
+        self.create_special_details_text(detailsLayout, "Port", "port")
+        self.create_special_details_text(detailsLayout, "SSH type", "ssh_type")
+        self.create_special_details_text(detailsLayout, "Error type", "error")     
+        
+        self.details_layout = detailsLayout
+        
         return detailsLayout
+
+    def create_special_details_text(self, detailsLayout, label_text, key):
+        frame = QFrame()
+        
+        layout, port_text = self.create_text_with_label(label_text)
+        frame.setLayout(layout)        
+        self.special_details[key] = (frame, port_text)        
+        
+        detailsLayout.addWidget(frame)
     
     def setup_log_list_layout(self):
         logListLayout = QVBoxLayout()
@@ -162,7 +181,6 @@ class LogViewer(QMainWindow):
         self.displayed_logs = self.filter_logs_by_date()
         
         for log in self.displayed_logs:
-            print(log)
             self.log_list_widget.addItem(log.__repr__()[:LOG_CHAR_LIMIT] + "...")
             
         self.change_row_index(0)
@@ -205,6 +223,18 @@ class LogViewer(QMainWindow):
         self.ipv4_text.setPlainText(str(log.ipv4))
         self.message_text.setPlainText(str(log.message))
         
+        if SHOW_SPECIFIC_DETAILS:
+            self.update_special_details(log)
+        
+    def update_special_details(self, log: SSHLogEntry):
+        for key, (frame, text) in self.special_details.items():
+            print(key)
+            if hasattr(log, key):
+                text.setPlainText(str(getattr(log, key)))
+                frame.show()
+            else:
+                frame.hide()
+        
     def next_log(self):
         if self.current_log_index < len(self.logs) - 1:
             self.change_row_index(self.current_log_index + 1)
@@ -217,11 +247,8 @@ class LogViewer(QMainWindow):
             
     def search_logs(self, file_path):    
         try:
-            print(self.logs)
-            self.logs = gather_logs_from(file_path)   
-            print(self.logs)            
-            self.fill_log_container()
-            print(self.logs)            
+            self.logs = gather_logs_from(file_path)         
+            self.fill_log_container()          
             return
         except FileNotFoundError:
             error_message = "File not found. Try again..."             
@@ -232,10 +259,8 @@ class LogViewer(QMainWindow):
         self.show_error_popup(error_message)
             
     def filter_logs_by_date(self):
-        print(self.logs)
         if not self.filter_by_date.isChecked():
             return self.logs
-        print(self.filter_by_date.isChecked())
         
         from_date = self.from_date_edit.dateTime().toPyDateTime()
         to_date = self.to_date_edit.dateTime().toPyDateTime()
