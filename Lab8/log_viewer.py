@@ -5,14 +5,16 @@ from ssh_log import SSHLogEntry
 from log_reader import gather_logs_from
 
 WIDTH = 900
-HEIGHT = 600
+HEIGHT = 800
 
 ERROR_WIDTH = 300
 ERROR_HEIGHT = 200
 
+MAX_TEXT_HEIGHT = 40
+
 LOG_CHAR_LIMIT = 60
 
-SHOW_SPECIFIC_DETAILS = False
+SHOW_SPECIFIC_DETAILS = True
 
 class ErrorPopup(QWidget):
     def __init__(self, message, dimensions):
@@ -55,6 +57,8 @@ class LogViewer(QMainWindow):
         
         self.setGeometry(*dimensions)
         
+        self.setMaximumSize(*dimensions[2:])
+        
         self.setup_ui()
         
         self.fill_log_container()
@@ -82,7 +86,7 @@ class LogViewer(QMainWindow):
         mainLayout = QHBoxLayout()
         
         mainLayout.addLayout(self.setup_log_list_layout(), 60)        
-        mainLayout.addLayout(self.setup_details_layout())
+        mainLayout.addLayout(self.setup_details_layout(), 40)
         
         return mainLayout
     
@@ -94,6 +98,7 @@ class LogViewer(QMainWindow):
         
         text = QTextEdit()   
         text.setReadOnly(True)     
+        text.setMaximumHeight(MAX_TEXT_HEIGHT)
         
         layout.addWidget(text)
         
@@ -135,7 +140,11 @@ class LogViewer(QMainWindow):
         frame = QFrame()
         
         layout, port_text = self.create_text_with_label(label_text)
-        frame.setLayout(layout)        
+        frame.setLayout(layout)    
+        frame.setContentsMargins(0, 0, 0, 0)   
+        layout.setContentsMargins(0, 0, 0, 0)
+        
+        frame.hide()
         self.special_details[key] = (frame, port_text)        
         
         detailsLayout.addWidget(frame)
@@ -228,7 +237,6 @@ class LogViewer(QMainWindow):
         
     def update_special_details(self, log: SSHLogEntry):
         for key, (frame, text) in self.special_details.items():
-            print(key)
             if hasattr(log, key):
                 text.setPlainText(str(getattr(log, key)))
                 frame.show()
