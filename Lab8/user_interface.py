@@ -43,4 +43,104 @@ odklasifunkcjizwiązanychzinterfejsemużytkownika.
 Zaluźnąreferencjęmożeposłużyćponiższyszkic:
 '''
 
-from ...JezykiSkryptowe.8.ssh_log import SSHLogEntry
+from ssh_log import SSHLogEntry
+from ssh_log_journal import SSHLogJournal
+import sys
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QLabel, QListWidget, QTextEdit
+
+a = SSHLogEntry.create_specific_log("Jan 12 12:12:12 localhost sshd[1234]: Accepted password for root from")
+
+def main():   
+    file_path = input("Enter file path: ") 
+    
+    journal = SSHLogJournal()
+    
+    try:
+        with open(file_path, "r") as f:
+            for line in f:
+                journal.append(line)
+    except FileNotFoundError:
+        print("File not found!")
+        
+    for log in journal:
+        print(log.__repr__()[:60])
+        
+        class LogViewer(QMainWindow):
+            def __init__(self, logs):
+                super().__init__()
+                self.logs = logs
+                self.current_log_index = 0
+                
+                self.setWindowTitle("Log Viewer")
+                self.setGeometry(100, 100, 500, 400)
+                
+                self.setup_ui()
+                self.display_log()
+                
+            def setup_ui(self):
+                central_widget = QWidget(self)
+                self.setCentralWidget(central_widget)
+                
+                layout = QVBoxLayout(central_widget)
+                
+                self.log_list_widget = QListWidget()
+                self.log_list_widget.currentRowChanged.connect(self.change_log)
+                layout.addWidget(self.log_list_widget)
+                
+                self.log_details_text_edit = QTextEdit()
+                layout.addWidget(self.log_details_text_edit)
+                
+                self.next_button = QPushButton("Next")
+                self.next_button.clicked.connect(self.next_log)
+                layout.addWidget(self.next_button)
+                
+                self.previous_button = QPushButton("Previous")
+                self.previous_button.clicked.connect(self.previous_log)
+                layout.addWidget(self.previous_button)
+                
+            def display_log(self):
+                self.log_list_widget.clear()
+                for log in self.logs:
+                    self.log_list_widget.addItem(log.__repr__()[:30] + "...")
+                    
+                self.log_list_widget.setCurrentRow(self.current_log_index)
+                self.change_log(self.current_log_index)
+                
+            def change_log(self, index):
+                self.current_log_index = index
+                log = self.logs[index]
+                self.log_details_text_edit.setPlainText(log.__repr__())
+                
+            def next_log(self):
+                if self.current_log_index < len(self.logs) - 1:
+                    self.current_log_index += 1
+                    self.log_list_widget.setCurrentRow(self.current_log_index)
+                
+            def previous_log(self):
+                if self.current_log_index > 0:
+                    self.current_log_index -= 1
+                    self.log_list_widget.setCurrentRow(self.current_log_index)
+
+        def main():
+            file_path = input("Enter file path: ")
+            
+            journal = SSHLogJournal()
+            
+            try:
+                with open(file_path, "r") as f:
+                    for line in f:
+                        journal.append(line)
+            except FileNotFoundError:
+                print("File not found!")
+            
+            app = QApplication(sys.argv)
+            log_viewer = LogViewer(journal)
+            log_viewer.show()
+            sys.exit(app.exec_())
+
+        if __name__ == "__main__":
+            main()
+    
+            
+if __name__ == "__main__":
+    main()

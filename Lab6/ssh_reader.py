@@ -1,7 +1,6 @@
-from dataclasses import dataclass
 import datetime
 from ssh_log import *
-from ssh_log_journal import SSHLogJournal
+from Lab8.ssh_log_journal import SSHLogJournal
 from ssh_user import SSHUser
 from random import shuffle
 
