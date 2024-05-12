@@ -30,11 +30,14 @@ class SSHLogJournal:
     def get_logs_by_octet(self, ip, octet_index):
         return self.get_logs_by_criteria(lambda log: log.ip is not None and log.ip.get_octet(octet_index) == ip)
     
+    def __repr__(self) -> str:
+        return f"Contains {len(self.logs)} logs"
+    
     def __getitem__(self, key):
         if isinstance(key, slice):
             return self.logs[key]
         elif isinstance(key, int):
-            return [self.logs[key]]
+            return self.logs[key]
         elif isinstance(key, IPv4Address):
             return [log for log in self.logs if log.ipv4 == key]
         elif isinstance(key, datetime):

@@ -27,6 +27,9 @@ class SSHLogEntry(ABC):
         self.user = SSHLogEntry.get_user_from_log(self.details)
         self.message = SSHLogEntry.get_message(self.details)
         
+    def get_unparsed_log(self):
+        return self._unparsed_log   
+        
     @property
     def has_ip(self):
         return self.ipv4 is not None

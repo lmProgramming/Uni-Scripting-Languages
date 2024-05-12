@@ -1,5 +1,7 @@
 from pyqt_search_bar import SearchBar
-from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QTextEdit, QPushButton, QLabel, QDateTimeEdit
+from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QTextEdit, QPushButton, QLabel, QDateTimeEdit, QCheckBox
+from PyQt5.QtCore import QDateTime
+from ssh_log import SSHLogEntry
 from log_reader import gather_logs_from
 
 WIDTH = 900
@@ -7,6 +9,8 @@ HEIGHT = 600
 
 ERROR_WIDTH = 300
 ERROR_HEIGHT = 200
+
+LOG_CHAR_LIMIT = 60
 
 class ErrorPopup(QWidget):
     def __init__(self, message, dimensions):
@@ -37,6 +41,7 @@ class LogViewer(QMainWindow):
         super().__init__()
         self.app = app
         self.logs = []
+        self.displayed_logs = []
         self.current_log_index = 0
         
         self.setWindowTitle("Log Browser")
@@ -52,16 +57,19 @@ class LogViewer(QMainWindow):
         
     def setup_date_layout(self):
         dateLayout = QHBoxLayout()
-        
-        self.date_label = QLabel("Filter by Date:")
-        dateLayout.addWidget(self.date_label)
+                
+        self.filter_by_date = QCheckBox("Filter by Date: ")
+        self.filter_by_date.stateChanged.connect(self.fill_log_container)
+        dateLayout.addWidget(self.filter_by_date)        
         
         self.from_date_edit = QDateTimeEdit()
         self.from_date_edit.setCalendarPopup(True)
+        self.from_date_edit.dateTimeChanged.connect(self.fill_log_container)        
         dateLayout.addWidget(self.from_date_edit)
                 
         self.to_date_edit = QDateTimeEdit()
         self.to_date_edit.setCalendarPopup(True)
+        self.to_date_edit.dateTimeChanged.connect(self.fill_log_container)      
         dateLayout.addWidget(self.to_date_edit)
         
         return dateLayout
@@ -74,14 +82,42 @@ class LogViewer(QMainWindow):
         
         return mainLayout
     
+    def create_text_with_label(self, label_text):
+        layout = QVBoxLayout()
+        
+        label = QLabel(label_text)
+        layout.addWidget(label)
+        
+        text = QTextEdit()   
+        text.setReadOnly(True)     
+        
+        layout.addWidget(text)
+        
+        return layout, text
+    
     def setup_details_layout(self):
         detailsLayout = QVBoxLayout()
         
         self.details_label = QLabel("Details:")
-        detailsLayout.addWidget(self.details_label)
+        detailsLayout.addWidget(self.details_label)       
         
-        self.details_text_edit = QTextEdit()
-        detailsLayout.addWidget(self.details_text_edit)
+        layout, self.unparsed_details_text = self.create_text_with_label("Unparsed details")
+        detailsLayout.addLayout(layout)
+        
+        layout, self.server_name_text = self.create_text_with_label("Server name")
+        detailsLayout.addLayout(layout)
+        
+        layout, self.event_text = self.create_text_with_label("Event")
+        detailsLayout.addLayout(layout)
+        
+        layout, self.user_text = self.create_text_with_label("User")
+        detailsLayout.addLayout(layout)
+        
+        layout, self.ipv4_text = self.create_text_with_label("IPV4")
+        detailsLayout.addLayout(layout)
+        
+        layout, self.message_text = self.create_text_with_label("Message")
+        detailsLayout.addLayout(layout)
         
         return detailsLayout
     
@@ -92,6 +128,7 @@ class LogViewer(QMainWindow):
         logListLayout.addWidget(self.log_list_label)
         
         self.log_list_widget = QListWidget()
+        self.log_list_widget.itemSelectionChanged.connect(lambda: self.selected_other_row(self.log_list_widget.currentRow()))
         logListLayout.addWidget(self.log_list_widget)
         
         return logListLayout
@@ -121,8 +158,12 @@ class LogViewer(QMainWindow):
         
     def fill_log_container(self):
         self.log_list_widget.clear()
-        for log in self.filter_logs_by_date():
-            self.log_list_widget.addItem(log.__repr__()[:30] + "...")
+        
+        self.displayed_logs = self.filter_logs_by_date()
+        
+        for log in self.displayed_logs:
+            print(log)
+            self.log_list_widget.addItem(log.__repr__()[:LOG_CHAR_LIMIT] + "...")
             
         self.change_row_index(0)
             
@@ -143,7 +184,7 @@ class LogViewer(QMainWindow):
         self.current_log_index = index
         
         self.previous_button.setEnabled(index > 0)
-        self.next_button.setEnabled(index < len(self.logs) - 1 or len(self.logs) == 0)
+        self.next_button.setEnabled(index < len(self.displayed_logs) - 1 or len(self.displayed_logs) == 0)
         
     def display_log(self):            
         self.log_list_widget.setCurrentRow(self.current_log_index)
@@ -153,7 +194,16 @@ class LogViewer(QMainWindow):
     def change_log(self, index):
         self.current_log_index = index
         log = self.logs[index]
-        self.log_details_text_edit.setPlainText(log.__repr__())
+        
+        self.update_log_details(log)
+        
+    def update_log_details(self, log: SSHLogEntry):
+        self.unparsed_details_text.setPlainText(str(log.details))
+        self.server_name_text.setPlainText(str(log.server_name))
+        self.event_text.setPlainText(str(log.event))
+        self.user_text.setPlainText(str(log.user))
+        self.ipv4_text.setPlainText(str(log.ipv4))
+        self.message_text.setPlainText(str(log.message))
         
     def next_log(self):
         if self.current_log_index < len(self.logs) - 1:
@@ -165,11 +215,13 @@ class LogViewer(QMainWindow):
             self.change_row_index(self.current_log_index - 1)
             self.log_list_widget.setCurrentRow(self.current_log_index)
             
-    def search_logs(self, file_path):        
+    def search_logs(self, file_path):    
         try:
-            self.logs = gather_logs_from(file_path)           
-            self.filter_logs_by_date()
+            print(self.logs)
+            self.logs = gather_logs_from(file_path)   
+            print(self.logs)            
             self.fill_log_container()
+            print(self.logs)            
             return
         except FileNotFoundError:
             error_message = "File not found. Try again..."             
@@ -180,8 +232,13 @@ class LogViewer(QMainWindow):
         self.show_error_popup(error_message)
             
     def filter_logs_by_date(self):
-        from_date = self.from_date_edit.date().toPyDate()
-        to_date = self.to_date_edit.date().toPyDate()
+        print(self.logs)
+        if not self.filter_by_date.isChecked():
+            return self.logs
+        print(self.filter_by_date.isChecked())
+        
+        from_date = self.from_date_edit.dateTime().toPyDateTime()
+        to_date = self.to_date_edit.dateTime().toPyDateTime()
         
         return [log for log in self.logs if from_date <= log.timestamp <= to_date]   
     
