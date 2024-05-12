@@ -36,6 +36,9 @@ class SSHLogEntry(ABC):
 
         matches = re.fullmatch(pattern, self._unparsed_log.strip())
         
+        if not matches:
+            raise ValueError("Invalid log entry")
+        
         self.timestamp = datetime.datetime.strptime(matches["datetime"], "%b %d %H:%M:%S").replace(year=2024)
         self.server_name = matches["servername"]
         self.event = matches["event"]
