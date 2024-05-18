@@ -1,0 +1,7 @@
+{
+    "python.testing.pytestArgs": [
+        "Lab9"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
+}
