@@ -1,6 +1,5 @@
 from pyqt_search_bar import SearchBar
 from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QTextEdit, QPushButton, QLabel, QDateTimeEdit, QCheckBox, QFrame
-from PyQt5.QtCore import QDateTime
 from ssh_log import SSHLogEntry
 from log_reader import gather_logs_from
 
